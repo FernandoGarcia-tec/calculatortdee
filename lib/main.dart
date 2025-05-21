@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+// Punto de entrada de la app
 void main() {
   runApp(const TDEECalculator());
 }
 
+// Widget principal de la app
 class TDEECalculator extends StatelessWidget {
   const TDEECalculator({super.key});
 
@@ -18,6 +20,7 @@ class TDEECalculator extends StatelessWidget {
   }
 }
 
+// Pantalla principal con el formulario y lógica
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
 
@@ -26,6 +29,7 @@ class CalculatorScreen extends StatefulWidget {
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
+  // Controladores para los campos de texto
   final TextEditingController ageController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
@@ -33,6 +37,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   String gender = 'male';
   String activityLevel = 'sedentary';
 
+  // Función para calcular el TDEE y mostrar el resultado
   void calculateTDEE() {
     final double? age = double.tryParse(ageController.text);
     final double? weight = double.tryParse(weightController.text);
@@ -41,33 +46,42 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     if (age == null || weight == null || height == null) {
       showDialog(
         context: context,
-        builder: (_) => const AlertDialog(
-          title: Text("Error"),
-          content: Text("Please enter valid numbers in all fields."),
-        ),
+        builder:
+            (_) => const AlertDialog(
+              title: Text("Error"),
+              content: Text("Please enter valid numbers in all fields."),
+            ),
       );
       return;
     }
 
-    double bmr = gender == 'male'
-        ? 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
-        : 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    // Fórmula BMR según género
+    double bmr =
+        gender == 'male'
+            ? 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
+            : 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
 
     final multipliers = {
       'sedentary': 1.2,
       'light': 1.375,
       'moderate': 1.55,
-      'active': 1.725
+      'active': 1.725,
     };
 
     final tdee = bmr * multipliers[activityLevel]!;
 
+    // Muestra el resultado en un diálogo
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("TDEE Result"),
-        content: Text("Your Total Daily Energy Expenditure is ${tdee.toStringAsFixed(0)} kcal/day."),
-      ),
+      builder:
+          (_) => AlertDialog(
+            title: const Text("TDEE Result"),
+            content: Text(
+              "Your Total Daily Energy Expenditure is ${tdee.toStringAsFixed(0)} kcal/day.\n\n"
+              "👉 To lose weight: eat approximately ${(tdee - 500).toStringAsFixed(0)} kcal/day.\n"
+              "👉 To gain weight: eat approximately ${(tdee + 500).toStringAsFixed(0)} kcal/day.",
+            ),
+          ),
     );
   }
 
@@ -83,7 +97,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             color: const Color(0xFF303030),
             borderRadius: BorderRadius.circular(24),
             boxShadow: const [
-              BoxShadow(color: Colors.black45, blurRadius: 10, offset: Offset(0, 4))
+              BoxShadow(
+                color: Colors.black45,
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
             ],
           ),
           child: SingleChildScrollView(
@@ -98,10 +116,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                // Campos de entrada personalizados
                 CustomInput(controller: ageController, label: 'Age'),
                 CustomInput(controller: weightController, label: 'Weight (kg)'),
                 CustomInput(controller: heightController, label: 'Height (cm)'),
                 const SizedBox(height: 16),
+                // Selección de género
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Text('Gender', style: TextStyle(color: Colors.white)),
@@ -122,15 +142,24 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
+                // Selección de nivel de actividad
                 const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Activity Level', style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    'Activity Level',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    for (var level in ['sedentary', 'light', 'moderate', 'active'])
+                    for (var level in [
+                      'sedentary',
+                      'light',
+                      'moderate',
+                      'active',
+                    ])
                       CustomButton(
                         label: level[0].toUpperCase() + level.substring(1),
                         active: activityLevel == level,
@@ -139,6 +168,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
+                // Botón para calcular TDEE
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -153,10 +183,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                     ),
                     child: const Text(
                       'Calculate TDEE',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -166,15 +199,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   }
 }
 
+// Widget personalizado para campos de entrada
 class CustomInput extends StatelessWidget {
   final TextEditingController controller;
   final String label;
 
-  const CustomInput({
-    super.key,
-    required this.controller,
-    required this.label,
-  });
+  const CustomInput({super.key, required this.controller, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -188,12 +218,16 @@ class CustomInput extends StatelessWidget {
         filled: true,
         fillColor: const Color(0xFF424242),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
     );
   }
 }
 
+// Widget personalizado para botones de selección
 class CustomButton extends StatelessWidget {
   final String label;
   final bool active;
